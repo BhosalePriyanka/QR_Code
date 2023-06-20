@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const qrcode = require('qrcode')
 
+
 //middleware
 app.use(cors())
 app.use(express.json())
@@ -17,14 +18,24 @@ app.get('/api',(req,res)=>{
 })
 
 app.post('/api',(req,res)=>{
-    const text = req.body.text
-   
-    qrcode.toDataURL(text,(err,src)=>{
-        // if(err){
-        //    return res.json({err:'Invalid Text'})
-        // }
-        res.json(src)
-        })
-   
+    try{
+        const text = req.body.text
   
+    if(!text){
+        // res.json({error:'Enter Text'})
+        throw new Error('Enter text...')
+    }
+    qrcode.toDataURL(text,(err, src)=>{
+        if(err){
+            res.json({error:err.message})
+        }
+   res.json(src)
+    })
+
+    }
+    catch(error){
+        res.json({error:error.message})
+
+    }
+    
 })

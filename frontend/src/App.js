@@ -5,9 +5,11 @@ import { useState } from 'react';
 
 
 function App() {
-  const[input,setInput] = useState('')
+  const[input,setInput] = useState({
+    text:''
+  })
   const[info,setInfo] = useState('')
-  const[err,setError] = useState('')
+  const[error,setError] = useState('')
 
   const handelChange = (e) =>{
 setInput({[e.target.name] : e.target.value})
@@ -19,17 +21,24 @@ const response = await fetch('http://localhost:4000/api',
 { method:'POST',
   body:JSON.stringify(input),
   headers:{
-    'Content-Type':'application/json' 
+    'Content-Type':'application/json',
   }
 })
 const data = await response.json()
-console.log(data)
-setInfo(data)
-setError(data)
-setInput({input:''})
+
+if(data.error){
+  setError(data.error)
+
+  
+}
+if(!data.error){
+  setInfo(data)
+  setInput({text:" "})
+  setError('')
+}
 }
 
-
+console.log(error)
 
   return (
     <div className="App">
@@ -40,7 +49,7 @@ setInput({input:''})
       <Button onClick={handelSubmit}>Genrate QR Code</Button>
       <br/>
       <Image src = {info}/>
-      {err && <p>{err.err}</p>}
+      {error && <p className='text-danger'>{error}</p>}
     </div>
   );
 }
